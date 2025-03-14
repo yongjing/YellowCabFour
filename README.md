@@ -7,4 +7,5 @@ Exercise YellowCab API
 
 ## Test hello word FastAPI 
 `poetry install`
-`uvicorn src.yellowcabfour.app:app --host localhost --port 8080 --reload`
+
+`uvicorn --host localhost --port 8080 --reload app:api`
