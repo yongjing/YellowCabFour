@@ -16,6 +16,17 @@ pyenv local <env name>
 3. Run the API:
 `uvicorn --host localhost --port 8080 --reload app:api`
 
+### Docker Setup
+1. Build the Docker image:
+```bash
+docker build -t yellowcab-api .
+```
+
+2. Run the container:
+```bash
+docker run -p 8080:8080 yellowcab-api
+```
+
 ## Feature Transformation Process
 
 The API uses a two-step process to transform the raw input features into the format expected by the model:
@@ -92,3 +103,52 @@ src/
     YellowCab.ipynb  # Training notebook
 app.py              # FastAPI application
 ```
+
+## API Deployment
+
+### Local Docker Development
+1. Ensure Docker permissions (if you get permission denied errors):
+```bash
+# Add your user to the docker group
+sudo usermod -aG docker $USER
+
+# Apply the new group membership
+newgrp docker
+```
+
+2. Build the Docker image:
+```bash
+docker build -t yellowcab-api .
+```
+
+3. Test the API locally:
+```bash
+docker run -p 8080:8080 yellowcab-api
+```
+
+The API will be available at `http://localhost:8080` for testing.
+
+### Container Registry
+1. Set the project ID:
+```bash
+PROJECT_ID=<your-gcp-project-id>
+```
+
+2. Tag the image for Google Container Registry:
+```bash
+docker tag yellowcab-api gcr.io/$PROJECT_ID/yellowcab-api
+```
+
+3. Push to Google Container Registry:
+```bash
+docker push gcr.io/$PROJECT_ID/yellowcab-api
+```
+
+### GCP Deployment
+Instructions for deploying to Google Cloud Platform will be added here, including:
+- Cloud Run configuration
+- Environment setup
+- Deployment commands
+- Monitoring and scaling settings
+
+Note: The container includes all necessary model files and dependencies for prediction.
