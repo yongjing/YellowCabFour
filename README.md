@@ -1,11 +1,92 @@
 # YellowCabFour
-Exercise YellowCab API
+Exercise YellowCab API - Taxi Trip Duration Prediction
 
 ## Setup
-### pyenv
-`pyenv virtualenv 3.10.12 yellowCabFour`
 
-## Test hello word FastAPI 
-`poetry install`
+### Environment Setup
+1. Create Python virtual environment:
+```bash
+pyenv virtualenv 3.10.12 <env name>
+pyenv local <env name>
+```
 
+2. Install dependencies:
+`pip install -e .`
+
+3. Run the API:
 `uvicorn --host localhost --port 8080 --reload app:api`
+
+## Feature Transformation Process
+
+The API uses a two-step process to transform the raw input features into the format expected by the model:
+
+1. **Input Processing**:
+   - Takes 3 basic features as input:
+     - `PULocationID`: Pickup location ID (integer)
+     - `DOLocationID`: Dropoff location ID (integer)
+     - `passenger_count`: Number of passengers (float)
+
+2. **Feature Transformation**:
+   - Uses `DictVectorizer` to transform categorical variables
+   - Converts input features to strings to match training data format
+   - Creates a sparse matrix with 528 features through one-hot encoding
+
+## API Usage
+
+### Endpoint: `/predict`
+
+**Request Format:**
+```json
+{
+    "PULocationID": 123,
+    "DOLocationID": 456,
+    "passenger_count": 1.0
+}
+```
+
+**Response Format:**
+```json
+{
+    "prediction": 15.5  // Duration in minutes
+}
+```
+
+### Example Request
+
+```bash
+curl -X POST "http://localhost:8080/predict" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "PULocationID": 142,
+           "DOLocationID": 43,
+           "passenger_count": 1,
+           "tpep_pickup_datetime": "2021-01-01T00:30:10",
+           "tpep_dropoff_datetime": "2021-01-01T00:36:12"
+         }'
+```
+
+Note: The datetime fields are optional and not used in the current model version.
+
+## Model Files
+
+The API requires two pickle files in the `src/models/` directory:
+- `forest_model.pkl`: The trained Random Forest model
+- `dict_vectorizer.pkl`: The fitted DictVectorizer for feature transformation
+
+## Technical Details
+
+- The feature transformation expands 3 input features into 528 features using one-hot encoding
+- The DictVectorizer handles all the feature engineering automatically
+- The model expects a sparse matrix input with exactly 528 features
+- All categorical variables are converted to strings before vectorization to match training data
+
+## Directory Structure
+```
+src/
+  models/
+    forest_model.pkl
+    dict_vectorizer.pkl
+  yellowcabfour/
+    YellowCab.ipynb  # Training notebook
+app.py              # FastAPI application
+```
