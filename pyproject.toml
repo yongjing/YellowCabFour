@@ -6,7 +6,7 @@ authors = [
     {name = "Aboubakar Koita",email = "makalou.bouba@pm.me"},
     {name = "Astrid Chatin",email = "astrid.chatin@gmail.com"},
     {name = "Yongjing CHEN",email = "yongjing.chen@gmail.com"},
-    {name = "Jean Philippe Meline"},
+    {name = "Jean Philippe Meline"= "jeanphilippe.meline@gmail.com},
 ]
 readme = "README.md"
 requires-python = ">=3.10"
