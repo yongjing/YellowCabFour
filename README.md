@@ -15,16 +15,6 @@ pyenv local <env name>
 
 3. Run the API:
 `uvicorn --host localhost --port 8080 --reload app:api`
-
-### Docker Setup
-1. Build the Docker image:
-```bash
-docker build -t yellowcab-api .
-```
-
-2. Run the container:
-```bash
-docker run -p 8080:8080 yellowcab-api
 ```
 
 ## Feature Transformation Process
