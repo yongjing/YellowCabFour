@@ -15,7 +15,6 @@ pyenv local <env name>
 
 3. Run the API:
 `uvicorn --host localhost --port 8080 --reload app:api`
-```
 
 ## Feature Transformation Process
 
