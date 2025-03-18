@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask import request, jsonify, render_template
 from flask_app.services.model_service import ModelService
@@ -39,4 +40,6 @@ def api_predict():
         return jsonify({'error': str(e)}), 400 
     
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True) 
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("DEBUG", False)
+    app.run(host='0.0.0.0', port=port, debug=debug) 
