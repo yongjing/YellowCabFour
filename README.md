@@ -95,7 +95,7 @@ app.py              # FastAPI application
 
 ## API Deployment
 
-### Local Docker Development
+### Docker config
 1. Ensure Docker permissions (if you get permission denied errors):
 ```bash
 # Add your user to the docker group
@@ -105,39 +105,38 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-2. Build the Docker image:
+### Set up environment variables
+We use direnv to manage environment variables.
+
+### Build the Docker image for GCP Container Registry
 ```bash
-docker build -t yellowcab-api .
+export TAG=0.0.1-dev
+export IMAGE_NAME=${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${TAG}
+docker build --build-arg TARGETPLATFORM=linux/amd64  -t ${IMAGE_NAME} .
 ```
 
-3. Test the API locally:
+### Test the API locally:
 ```bash
-docker run -p 8080:8080 yellowcab-api
+docker run -e PORT=${PORT} -p ${PORT}:${PORT} ${IMAGE_NAME}
 ```
 
 The API will be available at `http://localhost:8080` for testing.
 
-### Container Registry
-1. Set the project ID:
+
+### Grant access to the Container Registry (to be done once)
 ```bash
-PROJECT_ID=<your-gcp-project-id>
+gcloud auth configure-docker $LOCATION-docker.pkg.dev
 ```
 
-2. Tag the image for Google Container Registry:
+### Push the Docker image to GCP Container Registry
 ```bash
-docker tag yellowcab-api gcr.io/$PROJECT_ID/yellowcab-api
+docker push ${IMAGE_NAME}
 ```
 
-3. Push to Google Container Registry:
+### Run the Docker image on GCP Cloud Run
 ```bash
-docker push gcr.io/$PROJECT_ID/yellowcab-api
+gcloud run deploy ${IMAGE} --image=${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:latest \
+  --platform=managed --region=${LOCATION} --allow-unauthenticated
 ```
 
-### GCP Deployment
-Instructions for deploying to Google Cloud Platform will be added here, including:
-- Cloud Run configuration
-- Environment setup
-- Deployment commands
-- Monitoring and scaling settings
 
-Note: The container includes all necessary model files and dependencies for prediction.
