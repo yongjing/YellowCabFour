@@ -110,7 +110,6 @@ We use direnv to manage environment variables.
 
 ### Build the Docker image for GCP Container Registry
 ```bash
-export TAG=0.0.1-dev
 export IMAGE_NAME=${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${TAG}
 docker build --build-arg TARGETPLATFORM=linux/amd64  -t ${IMAGE_NAME} .
 ```
