@@ -43,10 +43,10 @@ docker_run:
 
 # gcloud auth configure-docker $LOCATION-docker.pkg.dev
 docker_push:
-  docker push ${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:latest
+	docker push ${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:latest
 
 gcp_build:
-	docker build  -t ${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:latest .
+	docker build  -t ${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:latest -f Dockerfile.api .
 
 deploy_service:
 	gcloud run deploy ${IMAGE} --image=${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:latest \
@@ -56,4 +56,7 @@ deploy: gcp_build docker_push deploy_service
 
 run_local_gcp: 
 	docker run -e PORT=${PORT} -p ${PORT}:${PORT} ${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:latest
+
+gcp_build_amd64:
+	docker buildx build --platform=linux/amd64 -t europe-west1-docker.pkg.dev/useful-citizen-452609-t2/yellow-cab-yj/yellow:latest -f Dockerfile.api .
 ### STRIP_END ###
