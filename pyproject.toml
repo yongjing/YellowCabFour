@@ -26,7 +26,7 @@ dependencies = [
 ]
 
 [tool.poetry]
-packages = [{include = "yellowcabfour", from = "src"}, {include = "flask_app", from = "src"}]
+packages = [{include = "yellowcabfour", from = "src"}, {include = "flask_app", from = "."}]
 
 
 [build-system]

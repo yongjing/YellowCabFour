@@ -5,8 +5,8 @@ class ModelService:
     # Define constants for model and vectorizer paths
     # Paths are relative to the location of this file
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    MODEL_PATH = os.path.join(BASE_DIR, "models", "dict_vectorizer.pkl")
-    VECTORIZER_PATH = os.path.join(BASE_DIR, "models", "forest_model.pkl")
+    MODEL_PATH = os.path.join(BASE_DIR, "src", "models", "dict_vectorizer.pkl")
+    VECTORIZER_PATH = os.path.join(BASE_DIR, "src", "models", "forest_model.pkl")
 
     def __init__(self):
         self.model = None
