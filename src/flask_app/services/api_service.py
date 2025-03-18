@@ -1,10 +1,13 @@
 import requests
 from typing import Dict
 from flask import current_app
+import loguru
+import os
 
 class APIService:
     def __init__(self):
-        self.api_base_url = "http://localhost:8080"
+        self.api_base_url = os.getenv("API_URL")
+        loguru.logger.info(f"API Base URL: {self.api_base_url}")
 
     def predict(self, 
                 pu_location_id: int, 
