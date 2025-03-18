@@ -24,4 +24,4 @@ showErrorDetails = true
 toolbarMode = "developer"
 
 [runner]
-fastReruns = true 
+fastReruns = true

@@ -3,7 +3,7 @@ Exercise YellowCab API - Taxi Trip Duration Prediction
 
 ## Components
 
-The project consists of two main components:
+The project consists of three main components:
 
 1. **Prediction Service (FastAPI)**
    - RESTful API service for model predictions
@@ -15,6 +15,12 @@ The project consists of two main components:
    - Connects to the prediction service
    - Provides form-based interaction
    - Runs on port 5000
+
+3. **Streamlit Interface**
+   - Alternative user-friendly web interface
+   - Interactive data visualization capabilities
+   - Connects to the prediction service
+   - Runs on port 8501
 
 ## Setup
 
@@ -40,18 +46,29 @@ pyenv local <env name>
 
 ## Web Application
 
-The Flask web application provides a user-friendly interface for making predictions:
+You can choose between two web interfaces:
 
+### Flask Interface
 - Access the web interface at `http://localhost:5000`
 - Simple form interface for entering trip details
 - Visual display of prediction results
 - Internally calls the FastAPI prediction service
 
-### Starting the Web App
-
+#### Starting the Flask App
 1. Ensure the FastAPI prediction service is running (port 8080)
 2. Run: `flask --app flask_app.run run --debug`
 3. Open your browser and navigate to `http://localhost:5000`
+
+### Streamlit Interface
+- Access the web interface at `http://localhost:8501`
+- Interactive and dynamic user interface
+- Real-time updates and visualizations
+- Seamless integration with the prediction service
+
+#### Starting the Streamlit App
+1. Ensure the FastAPI prediction service is running (port 8080)
+2. Run: `streamlit run streamlit/app.py`
+3. Your browser will automatically open to `http://localhost:8501`
 
 ## Feature Transformation Process
 

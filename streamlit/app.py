@@ -6,6 +6,9 @@ from loguru import logger
 def main():
     st.title("NYC Taxi Trip Duration Predictor")
     
+    # Get API URL from config
+    api_url = st.secrets["api_url"]
+    
     # Add inputs in the sidebar
     st.sidebar.header("Trip Information")
     
@@ -43,7 +46,7 @@ def main():
         try:
             # Make prediction request to FastAPI endpoint
             response = requests.post(
-                "http://localhost:8080/predict",
+                f"{api_url}/predict",
                 json=data
             )
             
