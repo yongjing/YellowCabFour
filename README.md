@@ -1,6 +1,21 @@
 # YellowCabFour
 Exercise YellowCab API - Taxi Trip Duration Prediction
 
+## Components
+
+The project consists of two main components:
+
+1. **Prediction Service (FastAPI)**
+   - RESTful API service for model predictions
+   - Handles direct API calls for trip duration predictions
+   - Runs on port 8080
+
+2. **Web Interface (Flask)**
+   - User-friendly web interface
+   - Connects to the prediction service
+   - Provides form-based interaction
+   - Runs on port 5000
+
 ## Setup
 
 ### Environment Setup
@@ -13,8 +28,30 @@ pyenv local <env name>
 2. Install dependencies:
 `pip install -e .`
 
-3. Run the API:
-`uvicorn --host localhost --port 8080 --reload app:api`
+3. Start the services:
+   1. First, start the prediction service:
+      ```bash
+      uvicorn --host localhost --port 8080 --reload app:api
+      ```
+   2. Then, start the web interface in a new terminal:
+      ```bash
+      flask --app flask_app.run run --debug
+      ```
+
+## Web Application
+
+The Flask web application provides a user-friendly interface for making predictions:
+
+- Access the web interface at `http://localhost:5000`
+- Simple form interface for entering trip details
+- Visual display of prediction results
+- Internally calls the FastAPI prediction service
+
+### Starting the Web App
+
+1. Ensure the FastAPI prediction service is running (port 8080)
+2. Run: `flask --app flask_app.run run --debug`
+3. Open your browser and navigate to `http://localhost:5000`
 
 ## Feature Transformation Process
 
@@ -31,7 +68,7 @@ The API uses a two-step process to transform the raw input features into the for
    - Converts input features to strings to match training data format
    - Creates a sparse matrix with 528 features through one-hot encoding
 
-## API Usage
+## Prediction Service API
 
 ### Endpoint: `/predict`
 
@@ -59,9 +96,8 @@ curl -X POST "http://localhost:8080/predict" \
      -d '{
            "PULocationID": 142,
            "DOLocationID": 43,
-           "passenger_count": 1,
-           "tpep_pickup_datetime": "2021-01-01T00:30:10",
-           "tpep_dropoff_datetime": "2021-01-01T00:36:12"
+           "passenger_count": 1
+
          }'
 ```
 
@@ -90,7 +126,12 @@ src/
     dict_vectorizer.pkl
   yellowcabfour/
     YellowCab.ipynb  # Training notebook
-app.py              # FastAPI application
+app.py              # FastAPI prediction service
+flask_app/          # Flask web application
+  ├── run.py        # Flask application entry point
+  ├── services/     # Application services
+  ├── templates/    # HTML templates
+  └── static/       # Static assets (CSS, JS, etc.)
 ```
 
 ## API Deployment

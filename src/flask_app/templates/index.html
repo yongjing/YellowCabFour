@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YellowCab Trip Duration Predictor</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .button-group button {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f8f8f8;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .button-group button:hover {
+            background-color: #e8e8e8;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f8f8f8;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YellowCab Trip Duration Predictor</h1>
+        <form id="prediction-form">
+            <div class="form-group">
+                <label for="PULocationID">Pickup Location ID:</label>
+                <input type="number" id="PULocationID" required>
+            </div>
+            <div class="form-group">
+                <label for="DOLocationID">Dropoff Location ID:</label>
+                <input type="number" id="DOLocationID" required>
+            </div>
+            <div class="form-group">
+                <label for="passenger_count">Passenger Count:</label>
+                <input type="number" id="passenger_count" step="1" min="1" required>
+            </div>
+            <div class="button-group">
+                <button type="button" id="api-btn">Predict Using API</button>
+                <button type="submit" style="display: none;">Predict Using UI Embedded Model</button>
+            </div>
+        </form>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                PULocationID: parseInt(document.getElementById('PULocationID').value),
+                DOLocationID: parseInt(document.getElementById('DOLocationID').value),
+                passenger_count: parseInt(document.getElementById('passenger_count').value)
+            };
+
+            try {
+                const response = await fetch('/local-predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                document.getElementById('result').innerHTML = 
+                    `Predicted trip duration: ${result.prediction.toFixed(2)} minutes`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    `<span class="error">Error: ${error.message}</span>`;
+            }
+        });
+
+        document.getElementById('api-btn').addEventListener('click', async () => {
+            const data = {
+                PULocationID: parseInt(document.getElementById('PULocationID').value),
+                DOLocationID: parseInt(document.getElementById('DOLocationID').value),
+                passenger_count: parseInt(document.getElementById('passenger_count').value)
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                document.getElementById('result').innerHTML = 
+                    `API Prediction: ${result.prediction.toFixed(2)} minutes`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    `<span class="error">Error: ${error.message}</span>`;
+            }
+        });
+    </script>
+</body>
+</html> 
