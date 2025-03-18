@@ -1,0 +1,22 @@
+# Use Python 3.10 slim image as base
+FROM python:3.10-slim
+
+#Set the working directory
+WORKDIR /app
+COPY requirements.txt requirements.txt
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+COPY README.md README.md
+COPY models models
+COPY api api
+COPY src src
+COPY pyproject.toml pyproject.toml
+
+RUN pip install .
+CMD uvicorn api.app:app --host 0.0.0.0 --port $PORT
+# EXPOSE 8000
+# Command to run on container start
+#CMD ["sh", "-c", "uvicorn src.yellow_cab.api:app --reload --host 0.0.0.0 --port $PORT"]
+#CMD ["uvicorn", "yellow_cab.api:app", "--reload", "--host", "0.0.0.0", "--port", $PORT]
+# CMD ["sh", "-c", "uvicorn yellowcab.api:app --reload --host 0.0.0.0 --port ${PORT}"]

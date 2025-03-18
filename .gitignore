@@ -1,3 +1,19 @@
+# Python 
+__pycache__/
+*.py[cod]
+*.so
+*.ipynb_checkpoints
+.python-version
+# Data
+data
+# Credentials
+.env
+
+# Solutions 
+*.solution
+lessons
+screenshots
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
