@@ -1,5 +1,12 @@
-# YellowCabFour
-Exercise YellowCab API - Taxi Trip Duration Prediction
+# YellowCab Trip Duration Prediction
+
+This project provides tools for predicting NYC Yellow Taxi trip durations using machine learning. It consists of three main components:
+
+- **yellowcab_model**: Core ML model training and prediction functionality
+- **yellowcab_api**: FastAPI service for serving predictions
+- **yellowcab_flask**: Web interface for making predictions
+
+## Project Structure
 
 ## Components
 
@@ -164,36 +171,67 @@ newgrp docker
 ```
 
 ### Set up environment variables
-We use direnv to manage environment variables.
+We use direnv to manage environment variables. direnv can load environment variables from different environment files (env.dev, env.prod, etc.) based on your needs.
+
+1. Install direnv (if not already installed):
+```bash
+# On Ubuntu/Debian
+sudo apt-get install direnv
+
+# On MacOS with Homebrew
+brew install direnv
+```
+
+2. Add direnv hook to your shell (add to ~/.bashrc, ~/.zshrc, etc.):
+```bash
+eval "$(direnv hook bash)"  # for bash
+# or
+eval "$(direnv hook zsh)"   # for zsh
+```
+
+3. Create a `.envrc` file in your project root:
+```bash
+# .envrc
+# Load environment based on ENVIRONMENT variable, defaulting to dev
+ENV_FILE=${ENVIRONMENT:-dev}
+dotenv "env.${ENV_FILE}"
+```
+
+4. Create environment-specific files:
+```bash
+# env.dev
+PORT=8080
+PROJECT_ID=your-dev-project-id
+LOCATION=us-central1
+REPOSITORY=your-repo
+IMAGE=yellowcab-api
+TAG=dev
+
+# env.prod
+PORT=8080
+PROJECT_ID=your-prod-project-id
+LOCATION=us-central1
+REPOSITORY=your-repo
+IMAGE=yellowcab-api
+TAG=prod
+```
+
+5. Allow direnv to load the .envrc file:
+```bash
+direnv allow
+```
+
+To switch environments, you can:
+```bash
+export ENVIRONMENT=prod  # Switch to production environment
+# or
+export ENVIRONMENT=dev   # Switch to development environment
+cd .                    # Reload the directory to apply changes
+```
+
+Now direnv will automatically load your environment variables from the appropriate env.xx file when you enter the project directory and unload them when you leave.
+
+Note: Make sure to add all `env.*` files to your `.gitignore` to keep sensitive information out of version control.
 
 ### Build the Docker image for GCP Container Registry
-```bash
-export IMAGE_NAME=${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${TAG}
-docker build --build-arg TARGETPLATFORM=linux/amd64  -t ${IMAGE_NAME} .
 ```
-
-### Test the API locally:
-```bash
-docker run -e PORT=${PORT} -p ${PORT}:${PORT} ${IMAGE_NAME}
-```
-
-The API will be available at `http://localhost:8080` for testing.
-
-
-### Grant access to the Container Registry (to be done once)
-```bash
-gcloud auth configure-docker $LOCATION-docker.pkg.dev
-```
-
-### Push the Docker image to GCP Container Registry
-```bash
-docker push ${IMAGE_NAME}
-```
-
-### Run the Docker image on GCP Cloud Run
-```bash
-gcloud run deploy ${IMAGE} --image=${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:latest \
-  --platform=managed --region=${LOCATION} --allow-unauthenticated
-```
-
-
