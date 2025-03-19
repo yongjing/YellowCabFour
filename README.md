@@ -34,6 +34,8 @@ pyenv virtualenv 3.10.12 yellowcab
 pyenv local yellowcab
 ```
 
+Note: In a production environment, each component would typically have its own virtual environment to avoid dependency conflicts. For this training context, we're using a single environment for simplicity since the risk of conflicts is minimal.
+
 2. Install each component:
 ```bash
 # Install API service
