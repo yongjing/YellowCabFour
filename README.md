@@ -2,15 +2,11 @@
 
 This project provides tools for predicting NYC Yellow Taxi trip durations using machine learning. It consists of three main components:
 
-- **yellowcab_model**: Core ML model training and prediction functionality
-- **yellowcab_api**: FastAPI service for serving predictions
+- **yellowcab_api**: FastAPI service for serving predictions (includes ML model functionality)
 - **yellowcab_flask**: Web interface for making predictions
-
-## Project Structure
+- **yellowcab_streamlit**: Alternative interactive web interface
 
 ## Components
-
-The project consists of three main components:
 
 1. **Prediction Service (FastAPI)**
    - RESTful API service for model predictions
@@ -29,72 +25,85 @@ The project consists of three main components:
    - Connects to the prediction service
    - Runs on port 8501
 
-## Setup
+## Setup and Installation
 
 ### Environment Setup
 1. Create Python virtual environment:
 ```bash
-pyenv virtualenv 3.10.12 <env name>
-pyenv local <env name>
+pyenv virtualenv 3.10.12 yellowcab
+pyenv local yellowcab
 ```
 
-2. Install dependencies:
-`pip install -e .`
+2. Install each component:
+```bash
+# Install API service
+cd yellowcab_api
+pip install -e .
+
+# Install Flask interface
+cd ../yellowcab_flask
+pip install -e .
+
+# Install Streamlit interface
+cd ../yellowcab_streamlit
+pip install -e .
+```
 
 3. Start the services:
-   1. First, start the prediction service:
+   1. Start the prediction service:
       ```bash
-      uvicorn --host localhost --port 8080 --reload app:api
+      cd yellowcab_api
+      uvicorn --host localhost --port 8080 --reload yellowcab_api.app:api
       ```
-   2. Then, start the web interface in a new terminal:
+   2. Start the web interface (in a new terminal):
       ```bash
-      flask --app flask_app.run run --debug
+      cd yellowcab_flask
+      flask --app yellowcab_flask.app run --debug
+      ```
+   3. Start the Streamlit interface (optional, in a new terminal):
+      ```bash
+      cd yellowcab_streamlit
+      streamlit run src/yallowcab_streamlit/app.py
       ```
 
-## Web Application
+## Web Interfaces
 
-You can choose between two web interfaces:
-
-### Flask Interface
-- Access the web interface at `http://localhost:5000`
+### Flask Interface (http://localhost:5000)
 - Simple form interface for entering trip details
 - Visual display of prediction results
 - Internally calls the FastAPI prediction service
 
-#### Starting the Flask App
-1. Ensure the FastAPI prediction service is running (port 8080)
-2. Run: `flask --app flask_app.run run --debug`
-3. Open your browser and navigate to `http://localhost:5000`
-
-### Streamlit Interface
-- Access the web interface at `http://localhost:8501`
+### Streamlit Interface (http://localhost:8501)
 - Interactive and dynamic user interface
 - Real-time updates and visualizations
-- Seamless integration with the prediction service
+- Data exploration capabilities
 
-#### Starting the Streamlit App
-1. Ensure the FastAPI prediction service is running (port 8080)
-2. Run: `streamlit run streamlit/app.py`
-3. Your browser will automatically open to `http://localhost:8501`
+## Model Details
 
-## Feature Transformation Process
-
-The API uses a two-step process to transform the raw input features into the format expected by the model:
+### Feature Transformation Process
+The API transforms raw input features in two steps:
 
 1. **Input Processing**:
-   - Takes 3 basic features as input:
+   - Required features:
      - `PULocationID`: Pickup location ID (integer)
      - `DOLocationID`: Dropoff location ID (integer)
      - `passenger_count`: Number of passengers (float)
 
-2. **Feature Transformation**:
-   - Uses `DictVectorizer` to transform categorical variables
-   - Converts input features to strings to match training data format
+2. **Feature Engineering**:
+   - Uses `DictVectorizer` for categorical variable transformation
+   - Converts inputs to strings to match training format
    - Creates a sparse matrix with 528 features through one-hot encoding
 
-## Prediction Service API
+### Model Files
+Required files in `yellowcab_api/models/`:
+- `forest_model.pkl`: Trained Random Forest model
+- `dict_vectorizer.pkl`: Fitted DictVectorizer
 
-### Endpoint: `/predict`
+Generate these files by running `YellowCab.ipynb` (requires MLflow server).
+
+## API Reference
+
+### Prediction Endpoint: `/predict`
 
 **Request Format:**
 ```json
@@ -112,8 +121,7 @@ The API uses a two-step process to transform the raw input features into the for
 }
 ```
 
-### Example Request
-
+**Example cURL Request:**
 ```bash
 curl -X POST "http://localhost:8080/predict" \
      -H "Content-Type: application/json" \
@@ -121,117 +129,126 @@ curl -X POST "http://localhost:8080/predict" \
            "PULocationID": 142,
            "DOLocationID": 43,
            "passenger_count": 1
-
          }'
 ```
 
-Note: The datetime fields are optional and not used in the current model version.
-
-## Model Files
-
-The API requires two pickle files in the `src/models/` directory:
-- `forest_model.pkl`: The trained Random Forest model
-- `dict_vectorizer.pkl`: The fitted DictVectorizer for feature transformation
-
-These model files are generated by running the `YellowCab.ipynb` notebook once. Note that the notebook requires a running MLflow server for tracking experiments and metrics.
-
-## Technical Details
-
-- The feature transformation expands 3 input features into 528 features using one-hot encoding
-- The DictVectorizer handles all the feature engineering automatically
-- The model expects a sparse matrix input with exactly 528 features
-- All categorical variables are converted to strings before vectorization to match training data
-
-## Directory Structure
+## Project Structure
 ```
-src/
-  models/
-    forest_model.pkl
-    dict_vectorizer.pkl
-  yellowcabfour/
-    YellowCab.ipynb  # Training notebook
-app.py              # FastAPI prediction service
-flask_app/          # Flask web application
-  ├── run.py        # Flask application entry point
-  ├── services/     # Application services
-  ├── templates/    # HTML templates
-  └── static/       # Static assets (CSS, JS, etc.)
+yellowcab_api/
+├── models/
+│   ├── forest_model.pkl
+│   └── dict_vectorizer.pkl
+├── src/
+│   └── yellowcab_api/
+│       ├── app.py
+│       └── model.py
+yellowcab_flask/
+├── src/
+│   └── yellowcab_flask/
+│       ├── app.py
+│       ├── services/
+│       ├── templates/
+│       └── static/
+yellowcab_streamlit/
+├── src/
+│   └── yellowcab_streamlit/
+│       └── app.py
 ```
 
-## API Deployment
+## Deployment
 
-### Docker config
-1. Ensure Docker permissions (if you get permission denied errors):
+Each component (yellowcab_api, yellowcab_flask, yellowcab_streamlit) needs to be configured and deployed separately.
+
+### Environment Configuration
+For each project directory, create a `.env` file:
+
+1. API Service (.env in yellowcab_api/):
 ```bash
-# Add your user to the docker group
-sudo usermod -aG docker $USER
+PORT=8080
+PROJECT_ID=your-project-id        # Your GCP project ID
+LOCATION=us-central1             # GCP region
+REPOSITORY=artifacts-repository  # Name of your Artifact Registry repository
+IMAGE=yellowcab-api
+TAG=0.0.1-dev
+```
 
-# Apply the new group membership
+2. Flask Interface (.env in yellowcab_flask/):
+```bash
+PORT=5000
+API_URL=http://localhost:8080
+PROJECT_ID=your-project-id
+LOCATION=us-central1
+REPOSITORY=artifacts-repository
+IMAGE=yellowcab-flask
+TAG=0.0.1-dev
+```
+
+3. Streamlit Interface (.env in yellowcab_streamlit/):
+```bash
+PORT=8501
+API_URL=http://localhost:8080
+PROJECT_ID=your-project-id
+LOCATION=us-central1
+REPOSITORY=artifacts-repository
+IMAGE=yellowcab-streamlit
+TAG=0.0.1-dev
+```
+
+Note: 
+- Add `.env` files to `.gitignore` in each project to protect sensitive information
+- Each service must have its own unique IMAGE name
+- REPOSITORY should match your GCP Artifact Registry repository name
+
+### Docker Setup
+
+1. Configure Docker permissions (if needed):
+```bash
+sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-### Set up environment variables
-We use direnv to manage environment variables. direnv can load environment variables from different environment files (env.dev, env.prod, etc.) based on your needs.
-
-1. Install direnv (if not already installed):
+2. Local development with Docker:
 ```bash
-# On Ubuntu/Debian
-sudo apt-get install direnv
+# For API service
+cd yellowcab_api
+make docker_build  # Build the Docker image locally
+make docker_run    # Run the container locally for testing
 
-# On MacOS with Homebrew
-brew install direnv
+# For Flask interface
+cd ../yellowcab_flask
+make docker_build
+make docker_run
+
+# For Streamlit interface
+cd ../yellowcab_streamlit
+make docker_build
+make docker_run
 ```
 
-2. Add direnv hook to your shell (add to ~/.bashrc, ~/.zshrc, etc.):
+3. Deploy to GCP:
 ```bash
-eval "$(direnv hook bash)"  # for bash
-# or
-eval "$(direnv hook zsh)"   # for zsh
+# For API service
+cd yellowcab_api
+make deploy  # Builds, pushes to GCR, and deploys to Cloud Run
+
+# For Flask interface
+cd ../yellowcab_flask
+make deploy
+
+# For Streamlit interface
+cd ../yellowcab_streamlit
+make deploy
 ```
 
-3. Create a `.envrc` file in your project root:
-```bash
-# .envrc
-# Load environment based on ENVIRONMENT variable, defaulting to dev
-ENV_FILE=${ENVIRONMENT:-dev}
-dotenv "env.${ENV_FILE}"
-```
+Note: Deploy the API service first, then update the API_URL in Flask and Streamlit configurations before deploying them.
 
-4. Create environment-specific files:
-```bash
-# env.dev
-PORT=8080
-PROJECT_ID=your-dev-project-id
-LOCATION=us-central1
-REPOSITORY=your-repo
-IMAGE=yellowcab-api
-TAG=dev
+## Coming Soon: Docker Compose Deployment
 
-# env.prod
-PORT=8080
-PROJECT_ID=your-prod-project-id
-LOCATION=us-central1
-REPOSITORY=your-repo
-IMAGE=yellowcab-api
-TAG=prod
-```
+The above deployment instructions describe how to build, run, and deploy each service individually. In the next iteration, we'll introduce a simpler deployment process using Docker Compose, which will allow:
 
-5. Allow direnv to load the .envrc file:
-```bash
-direnv allow
-```
+- Building and running all services with a single command
+- Simplified environment configuration
+- Automatic service discovery and networking
+- Coordinated deployment of all components
 
-To switch environments, you can:
-```bash
-export ENVIRONMENT=prod  # Switch to production environment
-# or
-export ENVIRONMENT=dev   # Switch to development environment
-cd .                    # Reload the directory to apply changes
-```
-
-Now direnv will automatically load your environment variables from the appropriate env.xx file when you enter the project directory and unload them when you leave.
-
-Note: Make sure to add all `env.*` files to your `.gitignore` to keep sensitive information out of version control.
-
-### Build the Docker image for GCP Container Registry
-```
+Stay tuned for Docker Compose implementation details.
