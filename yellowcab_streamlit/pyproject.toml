@@ -6,9 +6,10 @@ authors = [
     {name = "Aboubakar Koita",email = "makalou.bouba@pm.me"}
 ]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.12"
 dependencies = [
-    "streamlit (>=1.43.2,<2.0.0)"
+    "streamlit (>=1.43.2,<2.0.0)",
+    "loguru (>=0.7.3,<0.8.0)"
 ]
 
 [tool.poetry]
