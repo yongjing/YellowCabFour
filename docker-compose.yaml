@@ -3,6 +3,8 @@ services:
     build:
       context: ./yellowcab_api
       dockerfile: Dockerfile
+    image: yellowcab-api
+    container_name: yellowcab-api
     ports:
       - "8000:8000"
     environment:
@@ -16,6 +18,8 @@ services:
     build:
       context: ./yellowcab_flask
       dockerfile: Dockerfile
+    image: yellowcab-flask
+    container_name: yellowcab-flask
     ports:
       - "5000:5000"
     environment:
@@ -32,6 +36,8 @@ services:
     build:
       context: ./yellowcab_streamlit
       dockerfile: Dockerfile
+    image: yellowcab-streamlit
+    container_name: yellowcab-streamlit
     ports:
       - "8501:8501"
     environment:
